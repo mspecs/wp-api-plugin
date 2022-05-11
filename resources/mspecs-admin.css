@@ -1,0 +1,44 @@
+/*
+ * Settings
+ */
+
+.mspecs-actions-wrapper{
+    margin-top: 10rem;
+}
+.mspecs-actions-wrapper .button{
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.mspecs-actions-wrapper .button.loading{
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+/*
+ * Post edit
+ */
+.mspecs-meta-table{
+    border-collapse: collapse;
+    width: 100%;
+}
+.mspecs-meta-table tr{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.mspecs-meta-table tr:last-of-type{
+    border-bottom: none;
+}
+.mspecs-meta-table tr:nth-of-type(2n){
+    background: rgba(0, 0, 0, 0.05);
+}
+.mspecs-meta-table td,
+.mspecs-meta-table th{
+    padding: 0.5em 0.75em;
+}
+.mspecs-meta-table th{
+    text-align: left;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+.mspecs-meta-table pre{
+    white-space: break-spaces;
+}
