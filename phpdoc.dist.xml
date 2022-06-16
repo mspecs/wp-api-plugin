@@ -5,6 +5,7 @@
         xmlns="https://www.phpdoc.org"
         xsi:noNamespaceSchemaLocation="https://docs.phpdoc.org/latest/phpdoc.xsd"
 >
+    <title>Mspecs WordPress Plugin API Documentation</title>
     <paths>
         <output>docs</output>
         <cache>build/cache</cache>

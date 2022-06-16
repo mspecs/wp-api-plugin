@@ -1,0 +1,13 @@
+.detailsbar,
+.sidebar,
+.namespace > h1,
+.namespace > nav,
+a[href='#source-view']{
+    display: none !important;
+}
+
+body > .container-fluid {
+    padding: 0;
+    padding-bottom: 20px;
+}
+
