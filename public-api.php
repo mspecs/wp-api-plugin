@@ -237,7 +237,7 @@ function mspecs_get_deals($args = array()){
  * @param  array $buyer_details
  * @return array|WP_Error
  */
-function add_prospective_buyer($deal, $buyer_details){
+function mspecs_add_prospective_buyer($deal, $buyer_details){
     $deal = mspecs_get_deal($deal);
     if(!$deal) return null;
 
@@ -252,7 +252,7 @@ function add_prospective_buyer($deal, $buyer_details){
  * @param  array $buyer_details
  * @return array|WP_Error
  */
-function add_buyer_to_viewing($deal, $viewing_id, $buyer_details){
+function mspecs_add_buyer_to_viewing($deal, $viewing_id, $buyer_details){
     $deal = mspecs_get_deal($deal);
     if(!$deal) return null;
 
@@ -268,7 +268,7 @@ function add_buyer_to_viewing($deal, $viewing_id, $buyer_details){
  * @param  array $buyer_details
  * @return array|WP_Error
  */
-function add_buyer_to_viewing_slot($deal, $viewing_id, $slot_id, $buyer_details){
+function mspecs_add_buyer_to_viewing_slot($deal, $viewing_id, $slot_id, $buyer_details){
     $deal = mspecs_get_deal($deal);
     if(!$deal) return null;
 
