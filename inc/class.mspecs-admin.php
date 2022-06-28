@@ -125,10 +125,6 @@ class Mspecs_Admin {
                 'label' => __('Test', 'mspecs'),
                 'callback' => 'mspecs_test',
             ),
-            /* 'install_webhook' => array(
-                'label' => __('Install webhook', 'mspecs'),
-                'callback' => array('Mspecs_Webhook', 'install'),
-            ), */
         );
 
         return $actions;
