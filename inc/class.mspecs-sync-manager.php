@@ -9,8 +9,15 @@ class Mspecs_Sync_Manager {
         $has_subscriber_details = get_option('mspecs_has_subscriber_details', 0);
 
         if(!$has_subscriber_details){
-            self::download_subscriber_details();
+            self::download_subscriber_details(false);
         }
+
+        $has_webhook_secret = !empty(trim(mspecs_settings('api_secret')));
+        if(!$has_webhook_secret){
+            self::set_webhook_secret(false);
+        }
+
+        self::dispatch();
     }
 
     public static function full_resync(){
@@ -72,6 +79,14 @@ class Mspecs_Sync_Manager {
     public static function download_subscriber_details($dispatch = true){
         Mspecs::$syncer->push_to_queue(array(
             'action' => 'download_subscriber_details',
+        ));
+        
+        if($dispatch) self::dispatch();
+    }
+
+    public static function set_webhook_secret($dispatch = true){
+        Mspecs::$syncer->push_to_queue(array(
+            'action' => 'set_webhook_secret',
         ));
         
         if($dispatch) self::dispatch();

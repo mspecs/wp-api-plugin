@@ -6,10 +6,21 @@ class Mspecs_Webhook {
     }
 
     public static function handle_webhook(){
-        $data = json_decode(file_get_contents('php://input'), true);
+        $raw_data = file_get_contents('php://input');
+        $data = json_decode($raw_data, true);
         $subscriberId = mspecs_get($data, 'subscriberId');
 
         if($subscriberId === mspecs_settings('api_subscriber')){
+            // Verify signature
+            $secret = mspecs_settings('api_secret');
+            if(!empty($secret)){
+                if(!self::verify_webhook_signature(mspecs_get($_SERVER, 'HTTP_X_MSPECS_SIGNATURE'), $raw_data, $secret)){
+                    wp_send_json_error('Invalid signature', 401);
+                    wp_die();
+                    return;
+                }
+            }
+
             $eventType = mspecs_get($data, 'eventType');
             $dealId = mspecs_get($data, 'dealId');
             $deal = $dealId ? mspecs_get_deal($dealId) : false;
@@ -43,6 +54,24 @@ class Mspecs_Webhook {
             wp_send_json_error('Invalid subscriber', 401);
             wp_die();
         }
+    }
+
+    public static function verify_webhook_signature($header, $raw_body, $secret){
+        // error_log(print_r(compact('header', 'raw_body', 'secret'), true));
+
+        $parts = explode(',', $header);
+        $timestamp = trim(explode('=', $parts[0])[1]);
+        $headerSignature = trim(explode('=', $parts[1])[1]);
+
+        // error_log(print_r(compact('headerSignature', 'timestamp'), true));
+
+        $message = $timestamp.'.'.$raw_body;
+
+        $calculatedSignature = hash_hmac('sha256', $message, $secret);
+
+        // error_log(print_r(compact('calculatedSignature', $raw_body), true));
+
+        return $calculatedSignature === $headerSignature;
     }
 
     public static function get_webhook_url(){

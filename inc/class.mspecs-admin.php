@@ -60,6 +60,8 @@ class Mspecs_Admin {
         add_settings_field('mspecs_api_password', __('Password', 'mspecs'), array('Mspecs_Admin', 'api_password_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_subscriber', __('Subscriber ID', 'mspecs'), array('Mspecs_Admin', 'api_subscriber_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_domain', __('Domain', 'mspecs'), array('Mspecs_Admin', 'api_domain_callback'), 'mspecs', 'mspecs_api_settings');
+        add_settings_field('mspecs_api_secret', __('Webhook secret', 'mspecs'), array('Mspecs_Admin', 'api_secret_callback'), 'mspecs', 'mspecs_api_settings');
+        add_settings_field('mspecs_webhook_url', __('Webhook URL', 'mspecs'), array('Mspecs_Admin', 'webhook_url_callback'), 'mspecs', 'mspecs_api_settings');
     }
 
     public static function admin_menu(){
@@ -78,7 +80,7 @@ class Mspecs_Admin {
         self::display_settings_field('api_username');
     }
     public static function api_password_callback(){
-        self::display_settings_field('api_password'); // TODO: Change to password field
+        self::display_settings_field('api_password', 'password');
     }
     public static function api_subscriber_callback(){
         self::display_settings_field('api_subscriber');
@@ -86,14 +88,27 @@ class Mspecs_Admin {
     public static function api_domain_callback(){
         self::display_settings_field('api_domain');
     }
+    public static function api_secret_callback(){
+        self::display_settings_field('api_secret', 'text', true);
+    }
+    public static function webhook_url_callback(){
+        self::display_settings_field('webhook_url', 'text', Mspecs_Webhook::get_webhook_url());
+    }
 
-    private static function display_settings_field($key, $type = 'text'){
-        $settings = get_option('mspecs_settings');
-        $value = isset($settings[$key]) ? $settings[$key] : '';
-        $full_key = 'mspecs_settings[' . $key . ']';
-        ?>
-        <input class="regular-text" type="<?= esc_attr($type) ?>" name="<?= esc_attr($full_key) ?>" value="<?= esc_attr( $value ) ?>">
-        <?php
+    private static function display_settings_field($key, $type = 'text', $static = false){
+        if($static === false || $static === true){
+            $settings = get_option('mspecs_settings');
+            $value = isset($settings[$key]) ? $settings[$key] : '';
+            $full_key = 'mspecs_settings[' . $key . ']';
+        }else{
+            $value = $static;
+        }
+
+        if($static == false): ?>
+            <input class="regular-text" type="<?= esc_attr($type) ?>" name="<?= esc_attr($full_key) ?>" value="<?= esc_attr( $value ) ?>">
+        <?php else: ?> 
+            <input class="regular-text" type="<?= esc_attr($type) ?>" value="<?= esc_attr( $value ) ?>" disabled>
+        <?php endif;
     }
 
     /*
@@ -108,6 +123,10 @@ class Mspecs_Admin {
             'full_resync' => array(
                 'label' => __('Delete all data and run sync', 'mspecs'),
                 'callback' => array('Mspecs_Sync_Manager', 'full_resync')
+            ),
+            'generate_webhook_secret' => array(
+                'label' => __('Generate webhook secret', 'mspecs'),
+                'callback' => array('Mspecs_Sync_Manager', 'set_webhook_secret')
             ),
             'delete_all' => array(
                 'label' => __('Delete all deals from website', 'mspecs'),
