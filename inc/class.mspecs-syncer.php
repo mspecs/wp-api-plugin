@@ -46,6 +46,9 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
             case 'delete_subscriber_details':
                 $result = $this->delete_subscriber_details();
                 break;
+            case 'set_webhook_secret':
+                $result = $this->set_webhook_secret();
+                break;
         }
 
         if(is_wp_error($result)){
@@ -71,7 +74,6 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
 
     protected function complete() {
 		parent::complete();
-        error_log('Syncing complete'); // TODO: Remove
 	}
 
     public function download_subscriber_details(){
@@ -641,5 +643,15 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         }
 
         return false;
+    }
+
+    public function set_webhook_secret(){
+        $api_client = Mspecs::get_api_client();
+        $response = $api_client->generate_webhook_secret();
+        $secret = isset($response['secret']) ? $response['secret'] : false;
+        
+        if($secret){
+            mspecs_update_setting('api_secret', $secret);
+        }
     }
 }

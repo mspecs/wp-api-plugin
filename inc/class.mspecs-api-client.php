@@ -192,4 +192,8 @@ class Mspecs_Api_Client {
     public function add_buyer_to_viewing_slot($deal_id, $viewing_id, $slot_id, $buyer_details){
         return $this->request('POST', 'marketing/deals/'.rawurlencode($deal_id).'/externalViewer/'.rawurlencode($viewing_id).'/slot/'.rawurlencode($slot_id), $buyer_details);
     }
+
+    public function generate_webhook_secret(){
+        return $this->request('PUT', 'provider/webhookSecret');
+    }
 }
