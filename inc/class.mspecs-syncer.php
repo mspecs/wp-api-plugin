@@ -74,7 +74,6 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
 
     protected function complete() {
 		parent::complete();
-        error_log('Syncing complete'); // TODO: Remove
 	}
 
     public function download_subscriber_details(){

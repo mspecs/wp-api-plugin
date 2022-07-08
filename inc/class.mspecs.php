@@ -46,7 +46,7 @@ class Mspecs {
             ),
             'public' => false,
             'hierarchical' => false,
-            'show_ui' => true, // TODO: Switch off
+            'show_ui' => true,
             'menu_icon' => 'dashicons-admin-home',
             'capability_type' => 'post', // TODO: Change?
             'supports' => array('title', 'editor'),       
@@ -153,8 +153,6 @@ class Mspecs {
             'capability_type' => 'post', // TODO: Change?
             'supports' => array('title'),         
         )));
-
-        // TODO: Taxonomies?
     }
 
     public static function get_api_client(){
