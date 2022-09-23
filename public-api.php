@@ -68,11 +68,11 @@ function mspecs_get_deal_files($deal = null){
     $files = mspecs_get_deal_meta('files', $deal);
     if(!$files) return [];
 
-    // Make sure the image urls are correct
+    // Make sure the file urls are correct
     foreach($files as $i => $file){
         $path = mspecs_get($file, 'path');
         if(!empty($path)){
-            $image['url'] = mspecs_file_dir_url() . '/' . $path;
+            $file['url'] = mspecs_file_dir_url() . '/' . $path;
         }
 
         $files[$i] = $file;
