@@ -49,8 +49,9 @@ class Mspecs_Admin {
             'default' => array(
                 'api_username' => '',
                 'api_password' => '',
+                'api_access_token' => '',
                 'api_subscriber' => '',
-                'api_domain' => 'test-integration.mspecs.se', // TODO: Change to production domain
+                'api_domain' => 'integration.mspecs.se', 
             )
         ));
 
@@ -58,6 +59,7 @@ class Mspecs_Admin {
 
         add_settings_field('mspecs_api_username', __('Username', 'mspecs'), array('Mspecs_Admin', 'api_username_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_password', __('Password', 'mspecs'), array('Mspecs_Admin', 'api_password_callback'), 'mspecs', 'mspecs_api_settings');
+        add_settings_field('mspecs_api_access_token', __('AccessToken', 'mspecs'), array('Mspecs_Admin', 'api_access_token_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_subscriber', __('Subscriber ID', 'mspecs'), array('Mspecs_Admin', 'api_subscriber_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_domain', __('Domain', 'mspecs'), array('Mspecs_Admin', 'api_domain_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_secret', __('Webhook secret', 'mspecs'), array('Mspecs_Admin', 'api_secret_callback'), 'mspecs', 'mspecs_api_settings');
@@ -73,7 +75,14 @@ class Mspecs_Admin {
     }
 
     public static function api_settings_section_callback(){
-        echo '<p>TODO: instructions</p>';
+        echo '<p>
+            <h3>Instructions:</h3>
+            <ul>
+                <li> Generate an AccessToken inside the mspecs company settings (advanced settings)</li>
+                <li> Copy the hookUrl from the plugin settings and input the url into the corresponding field in the Mspecs company settings</li>
+                <li> SubscriberId will be populated automatically if the accessToken is correctly inputed</li>
+            </ul>
+        </p>';
     }
 
     public static function api_username_callback(){
@@ -81,6 +90,9 @@ class Mspecs_Admin {
     }
     public static function api_password_callback(){
         self::display_settings_field('api_password', 'password');
+    }
+    public static function api_access_token_callback(){
+        self::display_settings_field('api_access_token');
     }
     public static function api_subscriber_callback(){
         self::display_settings_field('api_subscriber');
