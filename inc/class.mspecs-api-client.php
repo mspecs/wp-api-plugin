@@ -14,7 +14,7 @@ class Mspecs_Api_Client {
             $client = new Mspecs_Api_Client(
                 mspecs_settings('api_username'),
                 mspecs_settings('api_password'),
-                mspecs_settings('api_accessToken'),
+                mspecs_settings('api_access_token'),
                 '',
                 mspecs_settings('api_domain')
             );
@@ -29,7 +29,7 @@ class Mspecs_Api_Client {
         $client = new Mspecs_Api_Client(
             mspecs_settings('api_username'),
             mspecs_settings('api_password'),
-            mspecs_settings('api_accessToken'),
+            mspecs_settings('api_access_token'),
             $subscriberId,
             mspecs_settings('api_domain')
         );
@@ -37,14 +37,14 @@ class Mspecs_Api_Client {
         return $client;
     }
 
-    public function __construct($username, $password, $token, $subscriberId, $domain){
+    public function __construct($username, $password, $accessToken, $subscriberId, $domain){
         $this->url = 'https://'.rtrim(trim($domain), '').'/api/';
 
-        if(empty($token)) {
+        if(empty($accessToken)) {
             $this->token = base64_encode($username.':'.$password);
             $this->tokenPrefix = 'Basic';
         } else {
-            $this->token = $token;
+            $this->token = $accessToken;
             $this->tokenPrefix = 'Bearer';
         }
 
