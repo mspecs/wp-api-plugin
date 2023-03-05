@@ -1,5 +1,6 @@
 name: "mspecs-wp-plugin"
 version: "3.9"
+
 services:
   db:
     image: mysql:8.0.31
