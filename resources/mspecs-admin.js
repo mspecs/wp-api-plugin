@@ -24,4 +24,10 @@ jQuery(function($){
             });
         // }
     });
+    
+    $('.hide_on_load').parent().parent().toggleClass('hide');
+    $('#api_auth_toggle').click(function(e) {
+        $('.basic_auth').parent().parent().toggleClass('hide');
+        $('.token_auth').parent().parent().toggleClass('hide');
+    });
 });

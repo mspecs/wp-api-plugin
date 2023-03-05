@@ -47,6 +47,7 @@ class Mspecs_Admin {
     public static function init_settings(){
         register_setting('mspecs', 'mspecs_settings', array(
             'default' => array(
+                'api_auth_toggle' => '0',
                 'api_username' => '',
                 'api_password' => '',
                 'api_access_token' => '',
@@ -57,6 +58,7 @@ class Mspecs_Admin {
 
         add_settings_section('mspecs_api_settings', __('API Settings', 'mspecs'), array('Mspecs_Admin', 'api_settings_section_callback'), 'mspecs');
 
+        add_settings_field('mspecs_api_auth_toggle',__('Auth toggle', 'mspecs'), array('Mspecs_Admin', 'api_auth_toggle_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_username', __('Username', 'mspecs'), array('Mspecs_Admin', 'api_username_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_password', __('Password', 'mspecs'), array('Mspecs_Admin', 'api_password_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_access_token', __('AccessToken', 'mspecs'), array('Mspecs_Admin', 'api_access_token_callback'), 'mspecs', 'mspecs_api_settings');
@@ -80,34 +82,54 @@ class Mspecs_Admin {
             <ul>
                 <li> Generate an AccessToken inside the mspecs company settings (advanced settings)</li>
                 <li> Copy the hookUrl from the plugin settings and input the url into the corresponding field in the Mspecs company settings</li>
-                <li> SubscriberId will be populated automatically if the accessToken is correctly inputed</li>
             </ul>
         </p>';
     }
 
+    private static function getAuthToggleSetting() {
+        $settings = get_option('mspecs_settings');
+        return isset($settings['api_auth_toggle']) ? $settings['api_auth_toggle'] || 0 : 0; 
+    }
+
+    private static function getHideClassIfEq($val){
+        $toggleValue = self::getAuthToggleSetting();
+        return $toggleValue == $val ? ' hide_on_load' : '';
+    }
+
+    public static function api_auth_toggle_callback(){
+        $toggleValue = self::getAuthToggleSetting();
+        $html = '<input type="checkbox" id="api_auth_toggle" class="wppd-ui-toggle" name="mspecs_settings[api_auth_toggle]" value="1"' . checked("1", $toggleValue, false ) . '/>';
+        $html .= '<label for="auth_toggle_switch"></label>';
+        echo $html;
+    }
+
     public static function api_username_callback(){
-        self::display_settings_field('api_username');
+        $class = 'basic_auth' . self::getHideClassIfEq('0');
+        self::display_settings_field('api_username', $class);
     }
     public static function api_password_callback(){
-        self::display_settings_field('api_password', 'password');
-    }
-    public static function api_access_token_callback(){
-        self::display_settings_field('api_access_token');
+        $class = 'basic_auth' . self::getHideClassIfEq('0');
+        self::display_settings_field('api_password', $class, 'password');
     }
     public static function api_subscriber_callback(){
-        self::display_settings_field('api_subscriber');
+        $class = 'basic_auth' . self::getHideClassIfEq('0');
+        self::display_settings_field('api_subscriber', $class);
+    }
+    public static function api_access_token_callback(){
+        $class = 'token_auth'.self::getHideClassIfEq('1');
+        self::display_settings_field('api_access_token', $class);
     }
     public static function api_domain_callback(){
         self::display_settings_field('api_domain');
     }
     public static function api_secret_callback(){
-        self::display_settings_field('api_secret', 'text', true);
+        self::display_settings_field('api_secret', '', 'text', true);
     }
     public static function webhook_url_callback(){
-        self::display_settings_field('webhook_url', 'text', Mspecs_Webhook::get_webhook_url());
+        self::display_settings_field('webhook_url', 'full-width', 'text', Mspecs_Webhook::get_webhook_url());
     }
 
-    private static function display_settings_field($key, $type = 'text', $static = false){
+    private static function display_settings_field($key, $class = '', $type = 'text', $static = false){
         if($static === false || $static === true){
             $settings = get_option('mspecs_settings');
             $value = isset($settings[$key]) ? $settings[$key] : '';
@@ -117,9 +139,9 @@ class Mspecs_Admin {
         }
 
         if($static == false): ?>
-            <input class="regular-text" type="<?= esc_attr($type) ?>" name="<?= esc_attr($full_key) ?>" value="<?= esc_attr( $value ) ?>">
+            <input class="regular-text <?= $class ?>" type="<?= esc_attr($type) ?>" name="<?= esc_attr($full_key) ?>" value="<?= esc_attr( $value ) ?>">
         <?php else: ?> 
-            <input class="regular-text" type="<?= esc_attr($type) ?>" value="<?= esc_attr( $value ) ?>" disabled>
+            <input class="regular-text <?= $class ?>" type="<?= esc_attr($type) ?>" value="<?= esc_attr( $value ) ?>" disabled>
         <?php endif;
     }
 
