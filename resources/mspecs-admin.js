@@ -22,8 +22,6 @@ jQuery(function($){
             .always(function(){
                 $button.removeClass('loading');
             });
-            $('#lal_add_fa').parents().eq(3).show();   
-
         // }
     });
     
