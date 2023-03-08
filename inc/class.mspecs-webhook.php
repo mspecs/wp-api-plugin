@@ -10,7 +10,7 @@ class Mspecs_Webhook {
         $data = json_decode($raw_data, true);
         $subscriberId = mspecs_get($data, 'subscriberId');
 
-        if(!isset($subscriberId) || $subscriberId === mspecs_settings('api_subscriber')){
+        if(!empty(mspecs_settings('api_subscriber')) || $subscriberId === mspecs_settings('api_subscriber')){
             // Verify signature
             $secret = mspecs_settings('api_secret');
             if(!empty($secret)){
