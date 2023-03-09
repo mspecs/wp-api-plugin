@@ -38,7 +38,11 @@ class Mspecs_Webhook {
                     }
                     break;
 
-                // TODO: Handle UN_PUBLISH?
+                case 'UN_PUBLISH': 
+                    if($dealId){
+                        Mspecs_Sync_Manager::delete_deal($dealId);
+                    }
+                    break;
                 
                 default:
                     if($dealId){
@@ -57,19 +61,19 @@ class Mspecs_Webhook {
     }
 
     public static function verify_webhook_signature($header, $raw_body, $secret){
-        // error_log(print_r(compact('header', 'raw_body', 'secret'), true));
+        //error_log(print_r(compact('header', 'raw_body', 'secret'), true));
 
         $parts = explode(',', $header);
         $timestamp = trim(explode('=', $parts[0])[1]);
         $headerSignature = trim(explode('=', $parts[1])[1]);
 
-        // error_log(print_r(compact('headerSignature', 'timestamp'), true));
+        //error_log(print_r(compact('headerSignature', 'timestamp'), true));
 
         $message = $timestamp.'.'.$raw_body;
 
         $calculatedSignature = hash_hmac('sha256', $message, $secret);
 
-        // error_log(print_r(compact('calculatedSignature', $raw_body), true));
+        //error_log(print_r(compact('calculatedSignature', $raw_body), true));
 
         return $calculatedSignature === $headerSignature;
     }

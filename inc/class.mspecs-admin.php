@@ -31,7 +31,7 @@ class Mspecs_Admin {
             )))
         ){
             // TODO: Minimize resources
-            wp_enqueue_script('mspecs-admin-js', plugins_url('resources/mspecs-admin.js', MSPECS_PLUGIN_FILE), array('jquery'));
+            wp_enqueue_script('mspecs-admin-js', plugins_url('resources/mspecs-admin.js', MSPECS_PLUGIN_FILE), array('jquery'), 1);
             wp_enqueue_style('mspecs-admin-css', plugins_url('resources/mspecs-admin.css', MSPECS_PLUGIN_FILE));
 
             wp_localize_script('mspecs-admin-js', 'mspecs_admin', array(

@@ -9,8 +9,8 @@ class Mspecs_Api_Client {
     public static function init(){
         $subscriberId = mspecs_settings('api_subscriber');
 
-        // Automatically set subscriber ID if missing
-        if(empty($subscriberId)){
+        // Automatically set subscriber ID if missing, only if using basic auth
+        if(empty($subscriberId) && empty(mspecs_settings('api_access_token'))){
             $client = new Mspecs_Api_Client(
                 mspecs_settings('api_username'),
                 mspecs_settings('api_password'),
