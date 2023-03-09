@@ -9,6 +9,7 @@ Version: 1.0.0
 
 define( 'MSPECS_PLUGIN_FILE', __FILE__ );
 define( 'MSPECS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+//For local development add_filter('https_ssl_verify', '__return_false');
 
 require_once( MSPECS_PLUGIN_DIR . 'inc/helpers.php' );
 
