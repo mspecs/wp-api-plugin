@@ -80,9 +80,9 @@ class Mspecs_Admin {
     public static function api_settings_section_callback(){
         echo '<p>
             <h3>Instructions:</h3>
+            <a href="https://support.mspecs.se/sv-SE/support/solutions/articles/13000098836-wordpress-plugin-ny-"  target="_blank">READ ME</a> 
             <ul>
-                <li> Generate an AccessToken inside the mspecs company settings (advanced settings)</li>
-                <li> Copy the hookUrl from the plugin settings and input the url into the corresponding field in the Mspecs company settings</li>
+                <li>Basic auth is deprectade, use accessToken instead</li>
             </ul>
         </p>';
     }
