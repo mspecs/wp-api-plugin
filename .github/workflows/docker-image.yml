@@ -1,0 +1,58 @@
+# token: ${{ secrets.REPO_DEPLOY_ACCESS_TOKEN }}
+name: Build new WP image
+
+on:
+  repository_dispatch:
+    types: [my-event]
+    
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+
+  repo_checkout:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout WP-api-plugin
+      uses: actions/checkout@v3
+      with:
+        token:  ${{ secrets.DEPLOY_DOCKER_PACKAGE }}
+        repository: mspecs/wp-api-plugin
+        path: wp-api-plugin
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build the Docker image
+      run: cd /home/runner/work/wp-api-plugin/wp-api-plugin/ && cp ./wp-api-plugin/Dockerfile ./
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: |
+          ghcr.io/${{ github.repository }}
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: .
+        push: true
+        tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{github.run_number}}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        labels: ${{ steps.meta.outputs.labels }}
+        
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.DEPLOY_ARGO_REPO_PAT }}
+        repository: mspecs/argo-templates
+        event-type: new-wp-image-pushed
+        client-payload: '{"tag": "${{ github.run_number }}"}'
+
