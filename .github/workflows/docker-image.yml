@@ -2,8 +2,8 @@
 name: Build new WP image
 
 on:
-  repository_dispatch:
-    types: [my-event]
+  push:
+    branches: ['develop']
     
 env:
   REGISTRY: ghcr.io
