@@ -3,7 +3,7 @@ name: Build new WP image
 
 on:
   push:
-    branches: ['develop']
+    branches: ['main']
     
 env:
   REGISTRY: ghcr.io
