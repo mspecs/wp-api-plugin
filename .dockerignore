@@ -1,0 +1,11 @@
+.dockerignore
+Dockerfile
+*.git*
+node_modules/*
+.editorconfig
+*.phpdoc*
+phpdoc.dist.xml
+docs
+.idea
+docker
+examples
