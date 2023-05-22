@@ -22,6 +22,7 @@ require_once( MSPECS_PLUGIN_DIR . 'inc/class.mspecs-syncer.php' );
 require_once( MSPECS_PLUGIN_DIR . 'inc/class.mspecs-sync-manager.php' );
 require_once( MSPECS_PLUGIN_DIR . 'inc/class.mspecs-webhook.php' );
 require_once( MSPECS_PLUGIN_DIR . 'inc/class.mspecs-error-handler.php' );
+require_once( MSPECS_PLUGIN_DIR . 'inc/class.mspecs-rest-api.php' );
 require_once( MSPECS_PLUGIN_DIR . 'public-api.php' );
 
 add_action( 'init', array( 'Mspecs', 'init' ) );

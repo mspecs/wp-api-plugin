@@ -13,6 +13,7 @@ class Mspecs {
         Mspecs_Sync_Manager::init();
         Mspecs_Webhook::init();
         Mspecs_Error_Handler::init();
+        Mspecs_Rest_Api::init();
 
         self::register_post_types();
     }
