@@ -117,9 +117,9 @@ function mspecs_get_viewings($deal = null){
 /**
  * Returns the current global $post object if it is a Mspecs Deal
  * If the $deal parameter is passed, it will instead return the WP_Post object if it is an Mspecs Deal or deal ID
- *  
+ *
  * @param  WP_Post|string|null $deal
- * 
+ *
  * @return WP_Post|null
  */
 function mspecs_get_the_deal($deal = null){
@@ -139,7 +139,7 @@ function mspecs_get_the_deal($deal = null){
  * @return bool
  */
 function mspecs_is_deal($deal){
-    return $deal && isset($deal->post_type) && $deal->post_type === 'mspecs_deal';
+    return $deal && isset($deal->post_type) && $deal->post_type === MSPECS_DEAL_CPT;
 }
 
 /*
@@ -209,7 +209,7 @@ function mspecs_get_deal($mspecs_id){
         return mspecs_is_deal($mspecs_id) ? $mspecs_id : false;
     }
 
-    return Mspecs_Store::get_deal($mspecs_id); 
+    return Mspecs_Store::get_deal($mspecs_id);
 }
 
 /**
@@ -218,7 +218,7 @@ function mspecs_get_deal($mspecs_id){
  * @see get_posts
  *
  * @param array $args
- * 
+ *
  * @return WP_Post[]|int[] Array of post objects or post IDs.
  */
 function mspecs_get_deals($args = array()){
@@ -229,7 +229,7 @@ function mspecs_get_deals($args = array()){
  *  Post data functions
  */
 
- 
+
 /**
  * Add a new prospective buyer to a deal. An error will be returned if the buyer is already added.
  *
@@ -331,7 +331,7 @@ function mspecs_get_organization(){
  * @return WP_Post|false
  */
 function mspecs_get_office($mspecs_id){
-    return Mspecs_Store::get_office($mspecs_id); 
+    return Mspecs_Store::get_office($mspecs_id);
 }
 
 /**
@@ -340,7 +340,7 @@ function mspecs_get_office($mspecs_id){
  * @see get_posts
  *
  * @param array $args
- * 
+ *
  * @return WP_Post[]|int[] Array of post objects or post IDs.
  */
 function mspecs_get_offices($args = array()){
@@ -354,7 +354,7 @@ function mspecs_get_offices($args = array()){
  * @return WP_Post|false
  */
 function mspecs_get_user($mspecs_id){
-    return Mspecs_Store::get_user($mspecs_id); 
+    return Mspecs_Store::get_user($mspecs_id);
 }
 
 /**
@@ -363,7 +363,7 @@ function mspecs_get_user($mspecs_id){
  * @see get_posts
  *
  * @param array $args
- * 
+ *
  * @return WP_Post[]|int[] Array of post objects or post IDs.
  */
 function mspecs_get_users($args = array()){

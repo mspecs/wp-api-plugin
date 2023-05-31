@@ -2,7 +2,7 @@
 
 class Mspecs_Syncer extends Mspecs_WP_Background_Process{
     protected $action = 'mspecs_sync';
-    
+
     public $max_retries = 5;
     public $cron_interval = 5; // Minutes
 
@@ -113,7 +113,7 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
 
         // Set WP default fields
         $args = array(
-            'post_type' => 'mspecs_organization',
+            'post_type' => MSPECS_ORG_CPT,
             'post_title' => $get('name', ''),
             'post_status' => 'publish',
 
@@ -168,13 +168,13 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
 
         // Set WP default fields
         $args = array(
-            'post_type' => 'mspecs_office',
+            'post_type' => MSPECS_OFFICE_CPT,
             'post_title' => $get('name', ''),
             'post_status' => 'publish',
 
             // 'post_date' // TODO
         );
-        
+
         $old_deal = mspecs_get_office($mspecs_id);
         if($old_deal){
             $args['ID'] = $old_deal->ID;
@@ -223,13 +223,13 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
 
         // Set WP default fields
         $args = array(
-            'post_type' => 'mspecs_user',
+            'post_type' => MSPECS_USER_CPT,
             'post_title' => $get('firstName', '') . ' ' . $get('lastName', ''),
             'post_status' => 'publish',
 
             // 'post_date' // TODO
         );
-        
+
         $old_deal = mspecs_get_user($mspecs_id);
         if($old_deal){
             $args['ID'] = $old_deal->ID;
@@ -285,7 +285,7 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
 
         // Set WP default fields
         $args = array(
-            'post_type' => 'mspecs_deal',
+            'post_type' => MSPECS_DEAL_CPT,
             'post_title' => $get('shortId', ''),
             'post_content' => $get('sellingTexts.sellingText', ''),
             'post_excerpt' => $get('sellingTexts.sellingTextShort', ''),
@@ -293,7 +293,7 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
 
             // 'post_date' // TODO
         );
-        
+
         $old_deal = mspecs_get_deal($mspecs_id);
         if($old_deal){
             $args['ID'] = $old_deal->ID;
@@ -473,7 +473,7 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         $dir = dirname($file_path);
 
         // Save file, based on wp_upload_bits
-        
+
         wp_mkdir_p($dir);
 
         $ifp = @fopen( $file_path, 'wb' );
@@ -649,7 +649,7 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         $api_client = Mspecs::get_api_client();
         $response = $api_client->generate_webhook_secret();
         $secret = isset($response['secret']) ? $response['secret'] : false;
-        
+
         if($secret){
             mspecs_update_setting('api_secret', $secret);
         }

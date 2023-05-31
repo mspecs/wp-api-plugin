@@ -19,7 +19,7 @@ class Mspecs {
     }
 
     public static function register_post_types(){
-        register_post_type('mspecs_deal', apply_filters('mspecs_deal_post_type', array(
+        register_post_type(MSPECS_DEAL_CPT, apply_filters('mspecs_deal_post_type', array(
             'labels' => array(
                 'name' => __('Deals - Mspecs', 'mspecs'),
                 'singular_name' => __('Deal', 'mspecs'),
@@ -50,10 +50,10 @@ class Mspecs {
             'show_ui' => true,
             'menu_icon' => 'dashicons-admin-home',
             'capability_type' => 'post', // TODO: Change?
-            'supports' => array('title', 'editor'),       
+            'supports' => array('title', 'editor'),
         )));
 
-        register_post_type('mspecs_office', apply_filters('mspecs_office_post_type', array(
+        register_post_type(MSPECS_OFFICE_CPT, apply_filters('mspecs_office_post_type', array(
             'labels' => array(
                 'name' => __('Offices - Mspecs', 'mspecs'),
                 'singular_name' => __('Office', 'mspecs'),
@@ -83,11 +83,11 @@ class Mspecs {
             'hierarchical' => false,
             'show_ui' => true, // TODO: Switch off
             'menu_icon' => 'dashicons-location',
-            'capability_type' => 'post', // TODO: Change?  
-            'supports' => array('title'),          
+            'capability_type' => 'post', // TODO: Change?
+            'supports' => array('title'),
         )));
 
-        register_post_type('mspecs_user', apply_filters('mspecs_user_post_type', array(
+        register_post_type(MSPECS_USER_CPT, apply_filters('mspecs_user_post_type', array(
             'labels' => array(
                 'name' => __('Users - Mspecs', 'mspecs'),
                 'singular_name' => __('User', 'mspecs'),
@@ -117,11 +117,11 @@ class Mspecs {
             'hierarchical' => false,
             'show_ui' => true, // TODO: Switch off
             'menu_icon' => 'dashicons-id-alt',
-            'capability_type' => 'post', // TODO: Change?    
-            'supports' => array('title'),        
+            'capability_type' => 'post', // TODO: Change?
+            'supports' => array('title'),
         )));
 
-        register_post_type('mspecs_organization', apply_filters('mspecs_organization_post_type', array(
+        register_post_type(MSPECS_ORG_CPT, apply_filters('mspecs_organization_post_type', array(
             'labels' => array(
                 'name' => __('Organizations - Mspecs', 'mspecs'),
                 'singular_name' => __('Organization', 'mspecs'),
@@ -152,7 +152,7 @@ class Mspecs {
             'show_ui' => true, // TODO: Switch off
             'menu_icon' => 'dashicons-store',
             'capability_type' => 'post', // TODO: Change?
-            'supports' => array('title'),         
+            'supports' => array('title'),
         )));
     }
 
