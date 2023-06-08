@@ -2,10 +2,23 @@
 /*
 Plugin Name: Mspecs Mäklarsystem - API
 Plugin URI: https://www.mspecs.se/
-Description: 
+Description:
 Author: Mspecs
 Version: 1.0.0
 */
+
+if (!defined('MSPECS_DEAL_CPT')) {
+	define('MSPECS_DEAL_CPT', 'mspecs_deal');
+}
+if (!defined('MSPECS_ORG_CPT')) {
+	define('MSPECS_ORG_CPT', 'mspecs_organization');
+}
+if (!defined('MSPECS_USER_CPT')) {
+	define('MSPECS_USER_CPT', 'mspecs_user');
+}
+if (!defined('MSPECS_OFFICE_CPT')) {
+	define('MSPECS_OFFICE_CPT', 'mspecs_office');
+}
 
 define( 'MSPECS_PLUGIN_FILE', __FILE__ );
 define( 'MSPECS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

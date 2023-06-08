@@ -2,7 +2,7 @@
 
 class Mspecs_Store {
     public static function init(){
-        
+
     }
 
     /**
@@ -14,7 +14,7 @@ class Mspecs_Store {
     public static function get_organization(){
         $args = array(
             'orderby' => 'date',
-            'post_type' => 'mspecs_organization',
+            'post_type' => MSPECS_ORG_CPT,
         );
 
         $organizations = self::get_posts(apply_filters('mspecs_get_organization_args', $args));
@@ -51,21 +51,21 @@ class Mspecs_Store {
             return false;
         }
     }
-    
+
     /**
      * get_users
      *
      * @see get_posts
      *
      * @param array $args
-     * 
+     *
      * @return WP_Post[]|int[] Array of post objects or post IDs.
      */
     public static function get_users($args = array()){
         $args = wp_parse_args($args, array(
             'orderby' => 'title',
             'order' => 'ASC',
-            'post_type' => 'mspecs_user',
+            'post_type' => MSPECS_USER_CPT,
         ));
 
         $users = self::get_posts(apply_filters('mspecs_get_users_args', $args));
@@ -100,21 +100,21 @@ class Mspecs_Store {
             return false;
         }
     }
-    
+
     /**
      * get_offices
      *
      * @see get_posts
      *
      * @param array $args
-     * 
+     *
      * @return WP_Post[]|int[] Array of post objects or post IDs.
      */
     public static function get_offices($args = array()){
         $args = wp_parse_args($args, array(
             'orderby' => 'title',
             'order' => 'ASC',
-            'post_type' => 'mspecs_office',
+            'post_type' => MSPECS_OFFICE_CPT,
         ));
 
         $offices = self::get_posts(apply_filters('mspecs_get_offices_args', $args));
@@ -126,7 +126,7 @@ class Mspecs_Store {
      * get_deal
      *
      * @see mspecs_get_deal
-     * 
+     *
      */
     public static function get_deal($mspecs_id){
         if(empty($mspecs_id)){
@@ -149,18 +149,18 @@ class Mspecs_Store {
             return false;
         }
     }
-    
+
     /**
      * get_deals
      *
      * @see gmspecs_get_deals
-     * 
+     *
      */
     public static function get_deals($args = array()){
         $args = wp_parse_args($args, array(
             'orderby' => 'date',
             'order' => 'DESC',
-            'post_type' => 'mspecs_deal',
+            'post_type' => MSPECS_DEAL_CPT,
         ));
 
         $deals = self::get_posts(apply_filters('mspecs_get_deals_args', $args));
@@ -188,7 +188,7 @@ class Mspecs_Store {
     public static function get_unique_meta_values($meta_key){
         global $wpdb;
 
-        $sql = $wpdb->prepare("SELECT DISTINCT meta_value FROM $wpdb->postmeta pm, $wpdb->posts p WHERE meta_key = %s and pm.post_id=p.ID  and p.post_type='mspecs_deal'", $meta_key);
+        $sql = $wpdb->prepare("SELECT DISTINCT meta_value FROM $wpdb->postmeta pm, $wpdb->posts p WHERE meta_key = %s and pm.post_id=p.ID  and p.post_type='" . MSPECS_DEAL_CPT . "'", $meta_key);
         $values = $wpdb->get_results($sql, ARRAY_A);
 
         $values = array_map(function($value){

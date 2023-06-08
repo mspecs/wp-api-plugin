@@ -24,10 +24,10 @@ class Mspecs_Admin {
         if(
             $hook === 'settings_page_mspecs'
             || ($hook === 'post.php' && in_array(get_post_type(), array(
-                'mspecs_deal',
-                'mspecs_organization',
-                'mspecs_office',
-                'mspecs_user',
+                MSPECS_DEAL_CPT,
+                MSPECS_ORG_CPT,
+                MSPECS_OFFICE_CPT,
+                MSPECS_USER_CPT,
             )))
         ){
             // TODO: Minimize resources
@@ -53,7 +53,7 @@ class Mspecs_Admin {
                 'api_password' => '',
                 'api_access_token' => '',
                 'api_subscriber' => '',
-                'api_domain' => 'integration.mspecs.se', 
+                'api_domain' => 'integration.mspecs.se',
             )
         ));
 
@@ -80,7 +80,7 @@ class Mspecs_Admin {
     public static function api_settings_section_callback(){
         echo '<p>
             <h3>Instructions:</h3>
-            <a href="https://support.mspecs.se/sv-SE/support/solutions/articles/13000098836-wordpress-plugin-ny-"  target="_blank">READ ME</a> 
+            <a href="https://support.mspecs.se/sv-SE/support/solutions/articles/13000098836-wordpress-plugin-ny-"  target="_blank">READ ME</a>
             <ul>
                 <li>Basic auth is deprectade, use accessToken instead</li>
             </ul>
@@ -89,7 +89,7 @@ class Mspecs_Admin {
 
     private static function getAuthToggleSetting() {
         $settings = get_option('mspecs_settings');
-        return isset($settings['api_auth_toggle']) ? $settings['api_auth_toggle'] || 0 : 0; 
+        return isset($settings['api_auth_toggle']) ? $settings['api_auth_toggle'] || 0 : 0;
     }
 
     private static function getHideClassIfEq($val){
@@ -141,7 +141,7 @@ class Mspecs_Admin {
 
         if($static == false): ?>
             <input class="regular-text <?= $class ?>" type="<?= esc_attr($type) ?>" name="<?= esc_attr($full_key) ?>" value="<?= esc_attr( $value ) ?>">
-        <?php else: ?> 
+        <?php else: ?>
             <input class="regular-text <?= $class ?>" type="<?= esc_attr($type) ?>" value="<?= esc_attr( $value ) ?>" disabled>
         <?php endif;
     }
@@ -217,10 +217,10 @@ class Mspecs_Admin {
      */
     public static function add_meta_boxes(){
         add_meta_box( 'mspecs-post-meta', __('Mspecs data', 'mspecs'), array('Mspecs_Admin', 'display_post_meta_box'), array(
-            'mspecs_deal',
-            'mspecs_organization',
-            'mspecs_office',
-            'mspecs_user',
+            MSPECS_DEAL_CPT,
+            MSPECS_ORG_CPT,
+            MSPECS_OFFICE_CPT,
+            MSPECS_USER_CPT,
         ) );
     }
     public static function display_post_meta_box(){
