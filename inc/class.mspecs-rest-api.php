@@ -2,6 +2,9 @@
 
 class Mspecs_Rest_Api {
     public static function init(){
+        // This function initializes the REST API route.
+        // The route can be accessed via the following URL structure: 
+        // http://yourwebsite.com/wp-json/mspecs/deal/
         add_action('rest_api_init', function(){
             register_rest_route('mspecs', '/deal/', array(
                 'methods' => 'GET',
@@ -11,6 +14,9 @@ class Mspecs_Rest_Api {
     }
 
     public static function handle_redirect(){
+        // This function handles the redirect when the above URL is accessed.
+        // The 'token' parameter should be included in the URL as a GET parameter.
+        // Example: http://yourwebsite.com/wp-json/mspecs/deal/?token=yourtoken
         $token = $_GET['token'];
         $token_parts = explode('.', $token);
         $payload = $token_parts[1];

@@ -19,10 +19,17 @@ if (!defined('MSPECS_USER_CPT')) {
 if (!defined('MSPECS_OFFICE_CPT')) {
 	define('MSPECS_OFFICE_CPT', 'mspecs_office');
 }
-
+// define('ALLOW_UNFILTERED_UPLOADS', true);
 define( 'MSPECS_PLUGIN_FILE', __FILE__ );
 define( 'MSPECS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 //For local development add_filter('https_ssl_verify', '__return_false');
+
+function custom_upload_mimes ( $mimes ) {
+    $mimes['kml'] = 'text/xml';
+    return $mimes;
+}
+add_filter('upload_mimes', 'custom_upload_mimes');
+
 
 require_once( MSPECS_PLUGIN_DIR . 'inc/helpers.php' );
 
