@@ -24,6 +24,13 @@ define( 'MSPECS_PLUGIN_FILE', __FILE__ );
 define( 'MSPECS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 //For local development add_filter('https_ssl_verify', '__return_false');
 
+//Unallowed filetypes couse issues with builtiin WP functions, add custom filetypes here.
+function custom_upload_mimes ( $mimes ) {
+    $mimes['kml'] = 'text/xml';
+    return $mimes;
+}
+add_filter('upload_mimes', 'custom_upload_mimes');
+
 require_once( MSPECS_PLUGIN_DIR . 'inc/helpers.php' );
 
 require_once( MSPECS_PLUGIN_DIR . 'vendor/wp-background-processing/wp-background-processing.php' );
