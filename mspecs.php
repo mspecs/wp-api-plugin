@@ -4,7 +4,6 @@ Plugin Name: Mspecs Mäklarsystem - API
 Plugin URI: https://www.mspecs.se/
 Description:
 Author: Mspecs
-Version: 1.0.0
 */
 
 if (!defined('MSPECS_DEAL_CPT')) {
