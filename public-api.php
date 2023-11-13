@@ -241,7 +241,7 @@ function mspecs_add_prospective_buyer($deal, $buyer_details){
     $deal = mspecs_get_deal($deal);
     if(!$deal) return null;
 
-    return Mspecs::get_api_client()->add_prospective_buyer($deal->ID, $buyer_details);
+    return Mspecs::get_api_client()->add_prospective_buyer($deal->mspecs_id, $buyer_details);
 }
 
 /**
@@ -256,7 +256,7 @@ function mspecs_add_buyer_to_viewing($deal, $viewing_id, $buyer_details){
     $deal = mspecs_get_deal($deal);
     if(!$deal) return null;
 
-    return Mspecs::get_api_client()->add_buyer_to_viewing($deal->ID, $viewing_id, $buyer_details);
+    return Mspecs::get_api_client()->add_buyer_to_viewing($deal->mspecs_id, $viewing_id, $buyer_details);
 }
 
 /**
@@ -272,7 +272,7 @@ function mspecs_add_buyer_to_viewing_slot($deal, $viewing_id, $slot_id, $buyer_d
     $deal = mspecs_get_deal($deal);
     if(!$deal) return null;
 
-    return Mspecs::get_api_client()->add_buyer_to_viewing_slot($deal->ID, $viewing_id, $slot_id, $buyer_details);
+    return Mspecs::get_api_client()->add_buyer_to_viewing_slot($deal->mspecs_id, $viewing_id, $slot_id, $buyer_details);
 }
 
 /*
