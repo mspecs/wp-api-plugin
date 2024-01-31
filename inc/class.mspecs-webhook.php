@@ -3,13 +3,12 @@
 class Mspecs_Webhook {
     public static function init(){
         add_action('wp_ajax_nopriv_mspecs_webhook', array('Mspecs_Webhook', 'handle_webhook'));
+        add_action('wp_ajax_nopriv_mspecs_statistics', array('Mspecs_Webhook', 'handle_stats'));
     }
 
-    public static function handle_webhook(){
-        $raw_data = file_get_contents('php://input');
+    public static function validate_request_or_die($raw_data) {
         $data = json_decode($raw_data, true);
         $subscriberId = mspecs_get($data, 'subscriberId');
-
         if(empty(mspecs_settings('api_subscriber')) || $subscriberId === mspecs_settings('api_subscriber')){
             // Verify signature
             $secret = mspecs_settings('api_secret');
@@ -17,47 +16,70 @@ class Mspecs_Webhook {
                 if(!self::verify_webhook_signature(mspecs_get($_SERVER, 'HTTP_X_MSPECS_SIGNATURE'), $raw_data, $secret)){
                     wp_send_json_error('Invalid signature', 401);
                     wp_die();
-                    return;
                 }
             }
-
-            $eventType = mspecs_get($data, 'eventType');
-            $dealId = mspecs_get($data, 'dealId');
-            $deal = $dealId ? mspecs_get_deal($dealId) : false;
-
-            switch($eventType){
-                case 'BIDDING':
-                    if($deal){
-                        update_post_meta($deal->ID, 'bidding', mspecs_get($data, 'eventData.data.bidding'));
-                    }
-                    break;
-
-                case 'VIEWING':
-                    if($deal){
-                        update_post_meta($deal->ID, 'viewings', mspecs_get($data, 'eventData.data.viewings'));
-                    }
-                    break;
-
-                case 'UN_PUBLISH': 
-                    if($dealId){
-                        Mspecs_Sync_Manager::delete_deal($dealId);
-                    }
-                    break;
-                
-                default:
-                    if($dealId){
-                        Mspecs_Sync_Manager::sync_deal($dealId);
-                    }
-
-                    break;
-            }
-    
-            wp_send_json_success(array());
-            wp_die();
-        }else{
+        } else {
             wp_send_json_error('Invalid subscriber', 401);
             wp_die();
         }
+    }
+
+    public static function handle_webhook(){
+        $raw_data = file_get_contents('php://input');
+        $data = json_decode($raw_data, true);
+
+        self::validate_request_or_die($raw_data);
+        
+        $eventType = mspecs_get($data, 'eventType');
+        $dealId = mspecs_get($data, 'dealId');
+        $deal = $dealId ? mspecs_get_deal($dealId) : false;
+        
+        switch($eventType){
+            case 'BIDDING':
+                if($deal){
+                    update_post_meta($deal->ID, 'bidding', mspecs_get($data, 'eventData.data.bidding'));
+                }
+                break;
+        
+            case 'VIEWING':
+                if($deal){
+                    update_post_meta($deal->ID, 'viewings', mspecs_get($data, 'eventData.data.viewings'));
+                }
+                break;
+        
+            case 'UN_PUBLISH': 
+                if($dealId){
+                    Mspecs_Sync_Manager::delete_deal($dealId);
+                }
+                break;
+            
+            default:
+                if($dealId){
+                    Mspecs_Sync_Manager::sync_deal($dealId);
+                }
+        
+                break;
+        }
+        
+        wp_send_json_success(array());
+        wp_die();
+    }
+
+    public static function handle_stats()
+    {
+        if (!has_action('return_statistics')) {
+
+            wp_send_json(array());
+            wp_die();
+        }
+
+        $raw_data = file_get_contents('php://input');
+        self::validate_request_or_die($raw_data);
+
+        $data = json_decode($raw_data, true);
+
+        do_action('return_statistics', $data);
+        wp_die();
     }
 
     public static function verify_webhook_signature($header, $raw_body, $secret){
