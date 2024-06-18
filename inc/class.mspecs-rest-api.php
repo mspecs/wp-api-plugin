@@ -26,4 +26,3 @@ class Mspecs_Rest_Api {
         do_action( 'redirect_to_deal', $payload);
     }
 }
-
