@@ -395,9 +395,17 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
     public function download_file($mspecs_file){
         $dir = mspecs_file_dir();
         $dir_url = mspecs_file_dir_url();
-        $title = sanitize_file_name(mspecs_get($mspecs_file, 'title'));
 
-        if(!$title){
+        $title_raw = mspecs_get($mspecs_file, 'title');
+
+        // Pre-sanitize fallback
+        if ( empty($title_raw) ) {
+            $title_raw = 'file';
+        }
+
+        $title = sanitize_file_name( (string) $title_raw );
+
+        if ( $title === '' ) {
             $title = 'file';
         }
 
@@ -427,9 +435,17 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         $image_sizes = mspecs_image_sizes();
         $dir = mspecs_file_dir();
         $dir_url = mspecs_file_dir_url();
-        $title = sanitize_file_name(mspecs_get($mspecs_image, 'title'));
 
-        if(!$title){
+        $title_raw = mspecs_get($mspecs_image, 'title');
+
+        // Pre-sanitize fallback if null/empty
+        if ( empty($title_raw) ) {
+            $title_raw = 'image';
+        }
+
+        $title = sanitize_file_name( (string) $title_raw );
+
+        if ( $title === '' ) {
             $title = 'image';
         }
 
