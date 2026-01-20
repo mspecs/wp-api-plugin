@@ -49,6 +49,9 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
             case 'set_webhook_secret':
                 $result = $this->set_webhook_secret();
                 break;
+            case 'fix_file_permissions':
+                $result = $this->fix_file_permissions();
+                break;
         }
 
         if(is_wp_error($result)){
@@ -487,10 +490,21 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         if(is_wp_error($response)) return $response;
 
         $dir = dirname($file_path);
+        $base_dir = mspecs_file_dir();
+        
+        $normalized_dir = wp_normalize_path($dir);
+        $normalized_base = wp_normalize_path($base_dir);
+        
+        if (strpos($normalized_dir . '/', $normalized_base . '/') !== 0) {
+            return new WP_Error('mspecs_security_error', __('Invalid file path detected', 'mspecs'));
+        }
 
         // Save file, based on wp_upload_bits
-
         wp_mkdir_p($dir);
+        
+        if ( !chmod( $dir, 0755 ) ) {
+            mspecs_log('Failed to set directory permissions: ' . $dir);
+        }
 
         $ifp = @fopen( $file_path, 'wb' );
         if ( ! $ifp ) {
@@ -500,10 +514,9 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         fwrite( $ifp, wp_remote_retrieve_body($response) );
         fclose( $ifp );
 
-        $stat  = @ stat( $dir );
-        $perms = $stat['mode'] & 0007777;
-        $perms = $perms & 0000666;
-        chmod( $file_path, $perms );
+        if ( !chmod( $file_path, 0644 ) ) {
+            mspecs_log('Failed to set file permissions: ' . $file_path);
+        }
 
         return true;
     }
@@ -659,6 +672,95 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         }
 
         return false;
+    }
+
+    public function fix_file_permissions(){
+        $last_run = get_transient('mspecs_last_permission_fix');
+        if ($last_run) {
+            return new WP_Error('mspecs_rate_limited', __('Permission fix was run recently. Please wait before running again.', 'mspecs'));
+        }
+        
+        $dir = mspecs_file_dir();
+        
+        if ( !file_exists( $dir ) ) {
+            return new WP_Error('mspecs_dir_not_found', __('Mspecs directory not found', 'mspecs'));
+        }
+        
+        $base_dir = realpath($dir);
+        if (!$base_dir) {
+            return new WP_Error('mspecs_invalid_dir', __('Invalid mspecs directory', 'mspecs'));
+        }
+
+        $fixed_files = 0;
+        $fixed_dirs = 0;
+        $errors = array();
+
+        if ( chmod( $base_dir, 0755 ) ) {
+            $fixed_dirs++;
+        } else {
+            mspecs_log('Failed to set permissions on main directory: ' . $base_dir);
+        }
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($base_dir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $item) {
+            $path = $item->getPathname();
+            
+            if ($item->isLink()) {
+                continue;
+            }
+            
+            $real_path = realpath($path);
+            if (!$real_path) {
+                $errors[] = sprintf(__('Skipped invalid path: %s', 'mspecs'), basename($path));
+                continue;
+            }
+            
+            $normalized_real = wp_normalize_path($real_path);
+            $normalized_base = wp_normalize_path($base_dir);
+            
+            if (strpos($normalized_real . '/', $normalized_base . '/') !== 0) {
+                $errors[] = sprintf(__('Skipped path outside base directory: %s', 'mspecs'), basename($path));
+                continue;
+            }
+            
+            if ($item->isDir()) {
+                if ( chmod( $real_path, 0755 ) ) {
+                    $fixed_dirs++;
+                } else {
+                    $errors[] = sprintf(__('Failed to fix permissions for directory: %s', 'mspecs'), basename($real_path));
+                    mspecs_log('Failed to chmod directory: ' . $real_path);
+                }
+            } else {
+                if ( chmod( $real_path, 0644 ) ) {
+                    $fixed_files++;
+                } else {
+                    $errors[] = sprintf(__('Failed to fix permissions for file: %s', 'mspecs'), basename($real_path));
+                    mspecs_log('Failed to chmod file: ' . $real_path);
+                }
+            }
+        }
+
+        set_transient('mspecs_last_permission_fix', time(), HOUR_IN_SECONDS);
+        
+        if (!empty($errors)) {
+            mspecs_log('Permission fix completed with some errors', array(
+                'fixed_files' => $fixed_files,
+                'fixed_dirs' => $fixed_dirs,
+                'errors' => count($errors)
+            ));
+        }
+
+        return array(
+            'success' => true,
+            'fixed_files' => $fixed_files,
+            'fixed_dirs' => $fixed_dirs,
+            'errors' => count($errors),
+            'message' => sprintf(__('Fixed permissions for %d files and %d directories', 'mspecs'), $fixed_files, $fixed_dirs)
+        );
     }
 
     public function set_webhook_secret(){
