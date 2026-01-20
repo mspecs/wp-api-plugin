@@ -412,6 +412,8 @@ function mspecs_file_dir(){
 
     if ( !file_exists( $image_dir ) ) {
         wp_mkdir_p( $image_dir );
+        
+        @chmod( $image_dir, 0755 );
     }
 
     return $image_dir;

@@ -100,6 +100,14 @@ class Mspecs_Sync_Manager {
         if($dispatch) self::dispatch();
     }
 
+    public static function fix_file_permissions($dispatch = true){
+        Mspecs::$syncer->push_to_queue(array(
+            'action' => 'fix_file_permissions',
+        ));
+        
+        if($dispatch) self::dispatch();
+    }
+
     public static function dispatch(){
         Mspecs::$syncer->save()->dispatch();
     }
