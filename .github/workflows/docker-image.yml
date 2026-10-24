@@ -41,11 +41,3 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{github.run_number}}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
-            
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.DEPLOY_ARGO_REPO_PAT }}
-          repository: mspecs/argo-templates
-          event-type: wp-api-plugin-image-pushed
-          client-payload: '{"tag": "${{ github.run_number }}"}'      
