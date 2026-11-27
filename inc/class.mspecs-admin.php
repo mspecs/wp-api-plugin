@@ -175,6 +175,10 @@ class Mspecs_Admin {
                 'label' => __('Delete subscriber details', 'mspecs'),
                 'callback' => array('Mspecs_Sync_Manager', 'delete_subscriber_details')
             ),
+            'fix_permissions' => array(
+                'label' => __('Fix file permissions (for Nginx)', 'mspecs'),
+                'callback' => array('Mspecs_Sync_Manager', 'fix_file_permissions')
+            ),
             'test' => array(
                 'label' => __('Test', 'mspecs'),
                 'callback' => 'mspecs_test',
