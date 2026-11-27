@@ -338,23 +338,23 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
         }
 
         // Download files
-        $files = $get('files');
-        if(is_array($files)){
-            foreach($files as $i => $file){
-                $downloaded = $this->download_file($file);
-                if(is_wp_error($downloaded)){
-                    // TODO: Handle error
-                    $api_client->set_deal_status_error($mspecs_id);
-                    return $downloaded;
-                }
-
-                $meta['files'][$i] = $downloaded;
+        $files = $get('files', array());
+        $meta['files'] = is_array($files) ? $files : array();
+        foreach($meta['files'] as $i => $file){
+            $downloaded = $this->download_file($file);
+            if(is_wp_error($downloaded)){
+                // TODO: Handle error
+                $api_client->set_deal_status_error($mspecs_id);
+                return $downloaded;
             }
+
+            $meta['files'][$i] = $downloaded;
         }
 
         // Delete removed files
         if($old_deal){
             $old_files = mspecs_get_deal_meta('files', $old_deal);
+            $old_files = is_array($old_files) ? $old_files : array();
             $new_files = wp_list_pluck($meta['files'], 'path');
 
             foreach($old_files as $old_file){
