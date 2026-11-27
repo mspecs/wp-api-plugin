@@ -1,0 +1,20 @@
+name: PHP regression tests
+
+on:
+  pull_request:
+  push:
+    branches: ['main']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: php:8.2-cli
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PHP syntax
+        run: find inc tests -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Run regression tests
+        run: php tests/run.php

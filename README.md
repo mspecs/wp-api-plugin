@@ -11,3 +11,10 @@ For more information and documentation, please visit:
 - **PHP:** Tested with **PHP 8.2.23**
 
 > ⚠️ Outside of the versions listed above, we do **not** provide any stability or compatibility guarantees.
+
+## Tests
+
+Run `php tests/run.php` with PHP 8.2. The regression tests exercise sold-deal
+pagination, sync queuing and file cleanup with offline HTTP, WordPress storage,
+media and background queue substitutes. No API credentials or WordPress database
+are required.

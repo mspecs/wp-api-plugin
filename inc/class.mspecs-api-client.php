@@ -166,6 +166,31 @@ class Mspecs_Api_Client {
         return $this->request('GET', 'marketing/deals');
     }
 
+    /**
+     * Retrieve sold deals from every page of the sold listings endpoint.
+     *
+     * @return array|WP_Error
+     */
+    public function get_all_sold_deals(){
+        $deals = array();
+        $next = null;
+
+        do{
+            $path = 'marketing/sold/deals';
+            if(!empty($next)){
+                $path .= '?next=' . rawurlencode($next);
+            }
+
+            $page = $this->request('GET', $path);
+            if(is_wp_error($page)) return $page;
+
+            $deals = array_merge($deals, mspecs_get($page, 'deals', array()));
+            $next = mspecs_get($page, 'next');
+        }while(!empty($next));
+
+        return $deals;
+    }
+
     public function get_all_services(){
         return $this->request('GET', 'provider/services');
     }
