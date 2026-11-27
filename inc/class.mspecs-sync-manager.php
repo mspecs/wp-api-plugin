@@ -21,12 +21,16 @@ class Mspecs_Sync_Manager {
     }
 
     public static function full_resync(){
+        // Client initialization can trigger a settings hook that dispatches the queue.
+        // Finish fetching both lists before adding any destructive work to it.
+        $deal_ids = self::get_all_deal_ids();
+        if(is_wp_error($deal_ids)) return $deal_ids;
+
         self::download_subscriber_details(false);
         self::delete_all_deals(false);
-        $result = self::sync_all_deals(false);
-
-        // Leave queued deletions unsaved if either deal list could not be fetched.
-        if(is_wp_error($result)) return $result;
+        foreach($deal_ids as $deal_id){
+            self::sync_deal($deal_id, false);
+        }
 
         self::dispatch();
     }
@@ -53,6 +57,17 @@ class Mspecs_Sync_Manager {
     }
 
     public static function sync_all_deals($dispatch = true){
+        $deal_ids = self::get_all_deal_ids();
+        if(is_wp_error($deal_ids)) return $deal_ids;
+
+        foreach($deal_ids as $deal_id){
+            self::sync_deal($deal_id, false);
+        }
+
+        if($dispatch) self::dispatch();
+    }
+
+    private static function get_all_deal_ids(){
         $api_client = Mspecs::get_api_client();
         $deals = $api_client->get_all_deals();
 
@@ -63,21 +78,18 @@ class Mspecs_Sync_Manager {
             return $deals;
         }
 
-        $sold_deals = $api_client->get_all_sold_deals();
+        $deal_ids = array_column($deals, 'id');
+        unset($deals);
+        $sold_deal_ids = $api_client->get_all_sold_deal_ids();
 
-        if(is_wp_error($sold_deals)){
-            mspecs_log($sold_deals);
-            Mspecs_Error_Handler::set_latest_error($sold_deals->get_error_message());
+        if(is_wp_error($sold_deal_ids)){
+            mspecs_log($sold_deal_ids);
+            Mspecs_Error_Handler::set_latest_error($sold_deal_ids->get_error_message());
 
-            return $sold_deals;
+            return $sold_deal_ids;
         }
 
-        $deal_ids = array_unique(array_column(array_merge($deals, $sold_deals), 'id'));
-        foreach($deal_ids as $deal_id){
-            self::sync_deal($deal_id, false);
-        }
-
-        if($dispatch) self::dispatch();
+        return array_unique(array_merge($deal_ids, $sold_deal_ids));
     }
 
     public static function sync_deal($deal_id, $dispatch = true){

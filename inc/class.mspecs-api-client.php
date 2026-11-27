@@ -167,12 +167,12 @@ class Mspecs_Api_Client {
     }
 
     /**
-     * Retrieve sold deals from every page of the sold listings endpoint.
+     * Retrieve sold deal IDs, releasing each full response before the next page.
      *
-     * @return array|WP_Error
+     * @return string[]|WP_Error
      */
-    public function get_all_sold_deals(){
-        $deals = array();
+    public function get_all_sold_deal_ids(){
+        $deal_ids = array();
         $next = null;
 
         do{
@@ -184,11 +184,12 @@ class Mspecs_Api_Client {
             $page = $this->request('GET', $path);
             if(is_wp_error($page)) return $page;
 
-            $deals = array_merge($deals, mspecs_get($page, 'deals', array()));
+            $deal_ids = array_merge($deal_ids, array_column(mspecs_get($page, 'deals', array()), 'id'));
             $next = mspecs_get($page, 'next');
+            unset($page);
         }while(!empty($next));
 
-        return $deals;
+        return $deal_ids;
     }
 
     public function get_all_services(){

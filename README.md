@@ -15,6 +15,7 @@ For more information and documentation, please visit:
 ## Tests
 
 Run `php tests/run.php` with PHP 8.2. The regression tests exercise sold-deal
-pagination, sync queuing and file cleanup with offline HTTP, WordPress storage,
-media and background queue substitutes. No API credentials or WordPress database
-are required.
+pagination, sync queuing and file cleanup with offline HTTP, WordPress storage
+and media substitutes. Isolated tests use the real settings hooks and background
+queue classes to verify resync ordering, and sync 20,000 sold objects under a
+128 MB memory limit. No API credentials or WordPress database are required.

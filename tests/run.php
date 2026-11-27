@@ -108,6 +108,13 @@ function respond_with_deal($deal){
         return response($deal);
     };
 }
+function run_isolated_test($filename, $memory_limit = '128M'){
+    $command = escapeshellarg(PHP_BINARY) . ' -d ' . escapeshellarg('memory_limit=' . $memory_limit)
+        . ' ' . escapeshellarg(__DIR__ . '/' . $filename) . ' 2>&1';
+    exec($command, $output, $status);
+    if($status !== 0) throw new RuntimeException(implode(PHP_EOL, $output));
+    echo implode(PHP_EOL, $output) . PHP_EOL;
+}
 
 $tests = array();
 $tests['full sync fetches every sold page and queues each deal once'] = function(){
@@ -132,7 +139,7 @@ $tests['sold pagination follows cursors even when a page is empty'] = function()
         expect('page-2', $query['next']);
         return response(array('deals' => array(array('id' => 'sold-1')), 'next' => null));
     };
-    expect(array(array('id' => 'sold-1')), Mspecs::$api_client->get_all_sold_deals());
+    expect(array('sold-1'), Mspecs::$api_client->get_all_sold_deal_ids());
 };
 $tests['empty sold results preserve published deals and dispatch preference'] = function(){
     global $http;
@@ -243,6 +250,12 @@ $tests['present files are retained while removed files are deleted'] = function(
     expect(false, Mspecs::$syncer->download_deal('sold-1'));
     expect(array($removed), Mspecs::$syncer->deleted_files);
     expect(array($kept), $stored_meta['files']);
+};
+$tests['subscriber autodetection cannot dispatch deletions before resync validation'] = function(){
+    run_isolated_test('resync-integration.php');
+};
+$tests['20,000 sold objects sync within a 128 MB memory limit'] = function(){
+    run_isolated_test('sold-memory.php');
 };
 
 $failed = 0;
