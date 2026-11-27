@@ -70,15 +70,18 @@ class Mspecs_Admin {
         add_settings_field('mspecs_webhook_url', __('Webhook URL', 'mspecs'), array('Mspecs_Admin', 'webhook_url_callback'), 'mspecs', 'mspecs_api_settings');
     }
 
-    // The webhook secret field is read-only and never posted, so keep the stored
-    // secret instead of letting a settings save wipe it.
+    // An empty webhook secret field keeps the stored secret. Otherwise saving the page while a
+    // secret is still being generated in the background would wipe it and start another one.
     public static function sanitize_settings($settings){
         $settings = is_array($settings) ? $settings : array();
+        $secret = isset($settings['api_secret']) ? trim($settings['api_secret']) : '';
 
-        if(!isset($settings['api_secret'])){
+        if($secret === ''){
             $old_settings = get_option('mspecs_settings');
-            $settings['api_secret'] = isset($old_settings['api_secret']) ? $old_settings['api_secret'] : '';
+            $secret = isset($old_settings['api_secret']) ? $old_settings['api_secret'] : '';
         }
+
+        $settings['api_secret'] = $secret;
 
         return $settings;
     }
@@ -96,7 +99,9 @@ class Mspecs_Admin {
             <h3>Instructions:</h3>
             <a href="https://support.mspecs.se/sv-SE/support/solutions/articles/13000098836-wordpress-plugin-ny-"  target="_blank">READ ME</a>
             <ul>
-                <li>Basic auth is deprectade, use accessToken instead</li>
+                <li>Basic auth is deprecated. Use an app token instead: in Mspecs, create a website token under Company settings → Website settings and paste it in AccessToken.</li>
+                <li>An app token can\'t generate the webhook secret. Create the webhook secret in Mspecs and paste it in Webhook secret.</li>
+                <li>Subscriber ID is only needed for app tokens that aren\'t tied to one service.</li>
             </ul>
         </p>';
     }
@@ -127,8 +132,8 @@ class Mspecs_Admin {
         self::display_settings_field('api_password', $class, 'password');
     }
     public static function api_subscriber_callback(){
-        $class = 'basic_auth' . self::getHideClassIfEq('0');
-        self::display_settings_field('api_subscriber', $class);
+        // Shown for both auth types: app tokens not tied to one service need it too
+        self::display_settings_field('api_subscriber');
     }
     public static function api_access_token_callback(){
         $class = 'token_auth'.self::getHideClassIfEq('1');
@@ -138,7 +143,8 @@ class Mspecs_Admin {
         self::display_settings_field('api_domain');
     }
     public static function api_secret_callback(){
-        self::display_settings_field('api_secret', '', 'text', true);
+        // Editable, so a secret created in Mspecs can be pasted when the token can't generate one
+        self::display_settings_field('api_secret');
     }
     public static function webhook_url_callback(){
         self::display_settings_field('webhook_url', 'full-width', 'text', Mspecs_Webhook::get_webhook_url());

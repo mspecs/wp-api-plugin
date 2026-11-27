@@ -66,6 +66,12 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
                 Mspecs_Error_Handler::set_latest_error($result->get_error_message());
             }
 
+            // Retrying a rejected token or a missing scope won't help, and with app tokens every
+            // failed attempt counts towards the API's failure limit, which blocks the token
+            if($http_status === 401 || $http_status === 403){
+                return false;
+            }
+
             return $item;
         }
 
@@ -664,6 +670,12 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
     public function set_webhook_secret(){
         $api_client = Mspecs::get_api_client();
         $response = $api_client->generate_webhook_secret();
+
+        // App tokens need the integration:provider scope and must not be tied to one service
+        // to generate the secret. The website token is tied to the website service.
+        if(mspecs_get($response, 'error_data.mspecs_api_error.status') === 403){
+            return new WP_Error('mspecs_api_error', __('This access token can\'t generate a webhook secret. Create the webhook secret in Mspecs and paste it in the Webhook secret field.', 'mspecs'), $response->get_error_data('mspecs_api_error'));
+        }
         if(is_wp_error($response)) return $response;
 
         $secret = mspecs_get($response, 'secret');
