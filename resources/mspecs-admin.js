@@ -21,6 +21,9 @@ jQuery(function($){
             })
             .always(function(){
                 $button.removeClass('loading');
+
+                // Show the new secret, or the error notice
+                if(action === 'generate_webhook_secret') location.reload();
             });
         // }
     });
