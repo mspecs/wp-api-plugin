@@ -664,10 +664,15 @@ class Mspecs_Syncer extends Mspecs_WP_Background_Process{
     public function set_webhook_secret(){
         $api_client = Mspecs::get_api_client();
         $response = $api_client->generate_webhook_secret();
-        $secret = isset($response['secret']) ? $response['secret'] : false;
+        if(is_wp_error($response)) return $response;
 
-        if($secret){
-            mspecs_update_setting('api_secret', $secret);
+        $secret = mspecs_get($response, 'secret');
+        if(empty($secret)){
+            return new WP_Error('mspecs_webhook_secret_missing', __('The Mspecs API did not return a webhook secret', 'mspecs'));
         }
+
+        mspecs_update_setting('api_secret', $secret);
+
+        return false;
     }
 }

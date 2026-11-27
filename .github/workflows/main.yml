@@ -30,7 +30,7 @@ jobs:
       with:
         type: 'zip'
         filename: 'mspecs-dist.zip'
-        exclusions: '*.git* /*node_modules/* .editorconfig *.phpdoc* phpdoc.dist.xml'
+        exclusions: '*.git* /*node_modules/* .editorconfig *.phpdoc* phpdoc.dist.xml tests/*'
     - name: Upload Release
       uses: ncipollo/release-action@v1
       with:

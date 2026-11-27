@@ -47,6 +47,7 @@ class Mspecs_Admin {
 
     public static function init_settings(){
         register_setting('mspecs', 'mspecs_settings', array(
+            'sanitize_callback' => array('Mspecs_Admin', 'sanitize_settings'),
             'default' => array(
                 'api_auth_toggle' => '0',
                 'api_username' => '',
@@ -67,6 +68,19 @@ class Mspecs_Admin {
         add_settings_field('mspecs_api_domain', __('Domain', 'mspecs'), array('Mspecs_Admin', 'api_domain_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_api_secret', __('Webhook secret', 'mspecs'), array('Mspecs_Admin', 'api_secret_callback'), 'mspecs', 'mspecs_api_settings');
         add_settings_field('mspecs_webhook_url', __('Webhook URL', 'mspecs'), array('Mspecs_Admin', 'webhook_url_callback'), 'mspecs', 'mspecs_api_settings');
+    }
+
+    // The webhook secret field is read-only and never posted, so keep the stored
+    // secret instead of letting a settings save wipe it.
+    public static function sanitize_settings($settings){
+        $settings = is_array($settings) ? $settings : array();
+
+        if(!isset($settings['api_secret'])){
+            $old_settings = get_option('mspecs_settings');
+            $settings['api_secret'] = isset($old_settings['api_secret']) ? $old_settings['api_secret'] : '';
+        }
+
+        return $settings;
     }
 
     public static function admin_menu(){
@@ -161,7 +175,8 @@ class Mspecs_Admin {
             ),
             'generate_webhook_secret' => array(
                 'label' => __('Generate webhook secret', 'mspecs'),
-                'callback' => array('Mspecs_Sync_Manager', 'set_webhook_secret')
+                // Run directly instead of queueing, so the page shows the new secret on reload
+                'callback' => array(Mspecs::$syncer, 'set_webhook_secret')
             ),
             'delete_all' => array(
                 'label' => __('Delete all deals from website', 'mspecs'),
@@ -205,6 +220,7 @@ class Mspecs_Admin {
         $response = call_user_func($actions[$action]['callback']);
 
         if(is_wp_error($response)){
+            Mspecs_Error_Handler::set_latest_error($response->get_error_message());
             wp_send_json_error($response, 500);
         }else{
             wp_send_json_success($response, 200);
